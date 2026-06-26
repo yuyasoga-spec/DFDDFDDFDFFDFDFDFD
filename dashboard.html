@@ -401,10 +401,52 @@ body{background:var(--bg)!important;color:var(--ink)}
 @media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
+<style id="auth-gate-style">
+#auth-gate{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;padding:24px;background:#07090f;font-family:'Noto Sans JP',sans-serif}
+#auth-gate.hide{display:none}
+#auth-gate .auth-card{position:relative;width:100%;max-width:380px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.12);border-radius:18px;box-shadow:0 24px 70px rgba(0,0,0,.6);padding:34px 30px 26px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+#auth-gate .auth-title{font-size:19px;font-weight:600;color:#fff;letter-spacing:.02em}
+#auth-gate .auth-sub{font-size:11px;color:rgba(255,255,255,.45);letter-spacing:.18em;text-transform:uppercase;margin-top:5px}
+#auth-gate .auth-checking{display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,.5);margin-top:22px}
+#auth-gate .auth-spinner{width:13px;height:13px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;display:inline-block;animation:authspin .8s linear infinite;flex-shrink:0}
+@keyframes authspin{to{transform:rotate(360deg)}}
+#auth-gate .auth-desc{font-size:12.5px;color:rgba(255,255,255,.65);line-height:1.85;margin-top:22px;margin-bottom:18px}
+#auth-gate .auth-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:12px 16px;border:none;border-radius:999px;background:#fff;color:#000;font-size:14px;font-weight:700;cursor:pointer;transition:transform .15s,background .15s;font-family:inherit}
+#auth-gate .auth-btn:hover{transform:scale(1.02);background:#e6e6ea}
+#auth-gate .auth-btn:active{transform:scale(.98)}
+#auth-gate .auth-err{display:none;margin-top:16px;font-size:12px;color:#ffb4b4;background:rgba(196,27,27,.15);border:1px solid rgba(248,113,113,.4);border-radius:8px;padding:9px 12px;line-height:1.6}
+#auth-gate .auth-err.show{display:block}
+#auth-gate .auth-foot{margin-top:22px;font-size:10px;color:rgba(255,255,255,.32);line-height:1.7}
+.user-chip{display:none;align-items:center;gap:7px;font-size:11px;color:rgba(255,255,255,.7);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.13);border-radius:20px;padding:3px 4px 3px 11px}
+body.authed .user-chip{display:inline-flex}
+.user-chip .uc-mail{max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.uc-logout{border:none;background:rgba(255,255,255,.12);color:rgba(255,255,255,.8);font-size:11px;cursor:pointer;border-radius:16px;padding:3px 10px;font-family:inherit;transition:all .13s}
+.uc-logout:hover{background:rgba(248,113,113,.28);color:#fff}
+</style>
 </head>
 <body>
 <video class="bg-video-dash" autoplay loop muted playsinline src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4"></video>
 <a class="back-to-entrance" href="index.html">← 入口に戻る</a>
+
+<!-- ===== ログインゲート（@liv-inc.jp のメンバー専用） ===== -->
+<div id="auth-gate">
+  <div class="auth-card">
+    <div class="auth-title">株式会社LIV 人事部ツール</div>
+    <div class="auth-sub">上長評価 Dashboard</div>
+    <div id="auth-checking" class="auth-checking">
+      <span class="auth-spinner"></span> 認証を確認しています…
+    </div>
+    <div id="auth-login" style="display:none">
+      <div class="auth-desc">このダッシュボードは <strong>@liv-inc.jp</strong> のメンバー専用です。<br>会社のGoogleアカウントでログインしてください。</div>
+      <button class="auth-btn" id="auth-google-btn" onclick="doGoogleLogin()">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35 24 35c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.5 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.5 29.6 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35 26.7 36 24 36c-5.3 0-9.7-2.6-11.3-7l-6.5 5C9.6 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.6l6.2 5.2C40.9 35.3 44 30.1 44 24c0-1.3-.1-2.3-.4-3.5z"/></svg>
+        Googleでログイン
+      </button>
+      <div class="auth-err" id="auth-err"></div>
+    </div>
+    <div class="auth-foot">アクセスでお困りの場合は管理者にお問い合わせください。</div>
+  </div>
+</div>
 
 
 
@@ -586,6 +628,7 @@ body{background:var(--bg)!important;color:var(--ink)}
       <button class="btn btn-sm" onclick="exportCSV()">
         <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12h10M8 3v7M5 7l3 3 3-3"/></svg>CSV出力
       </button>
+      <div class="user-chip"><span class="uc-mail" id="uc-mail"></span><button class="uc-logout" onclick="doLogout()">ログアウト</button></div>
     </div>
   </div>
 
@@ -3245,6 +3288,48 @@ init();
    ・ページ読み込み時にFirestoreからデータ取得
    ・データ変更時に自動保存（1.5秒デバウンス）
 ============================================= */
+/* =============================================
+   認証（@liv-inc.jp 限定 Googleログイン）
+   ★ 許可メンバーは下記で管理（実際の遮断はFirestoreルールで強制）
+============================================= */
+const ALLOWED_EMAILS = [
+  "yuya.soga@liv-inc.jp",
+];
+const ALLOWED_DOMAINS = [
+  "liv-inc.jp",
+];
+function isEmailAllowed(email){
+  if(!email) return false;
+  email = String(email).toLowerCase();
+  if(ALLOWED_EMAILS.some(function(e){return e.toLowerCase()===email;})) return true;
+  var dom = email.split('@')[1] || '';
+  if(ALLOWED_DOMAINS.some(function(d){return d.toLowerCase()===dom;})) return true;
+  return false;
+}
+function showAuthError(msg){
+  var box=document.getElementById('auth-login'); if(box) box.style.display='block';
+  var chk=document.getElementById('auth-checking'); if(chk) chk.style.display='none';
+  var e=document.getElementById('auth-err'); if(e){ e.textContent=msg; e.classList.add('show'); }
+}
+function clearAuthError(){ var e=document.getElementById('auth-err'); if(e){ e.textContent=''; e.classList.remove('show'); } }
+function showLoginButton(){
+  var chk=document.getElementById('auth-checking'); if(chk) chk.style.display='none';
+  var box=document.getElementById('auth-login'); if(box) box.style.display='block';
+}
+function doGoogleLogin(){
+  clearAuthError();
+  if(!(window.firebase&&firebase.auth)){ showAuthError('認証モジュールの読み込み中です。数秒後にもう一度お試しください。'); return; }
+  var provider = new firebase.auth.GoogleAuthProvider();
+  provider.setCustomParameters({ hd:'liv-inc.jp', prompt:'select_account' });
+  firebase.auth().signInWithPopup(provider).catch(function(err){
+    var code = err && err.code ? err.code : '';
+    if(code==='auth/popup-closed-by-user' || code==='auth/cancelled-popup-request') return;
+    if(code==='auth/popup-blocked'){ firebase.auth().signInWithRedirect(provider); return; }
+    showAuthError('ログインに失敗しました：'+(err&&err.message?err.message:err));
+  });
+}
+function doLogout(){ if(window.firebase&&firebase.auth){ firebase.auth().signOut().then(function(){ location.reload(); }); } }
+
 const FB_CFG = {
   apiKey: "AIzaSyB13BpyTYRiGYK1PsQ0asRVULr5sMWpPVo",
   authDomain: "performance-134ed.firebaseapp.com",
@@ -3384,22 +3469,48 @@ function hookAutoSave(db){
   }
 }
 
-// 起動：Firebase SDK を動的ロード → Firestore読込 → フック設定
+// 起動：Firebase SDK（App + Auth + Firestore）を動的ロード
+//   → ログイン状態を確認 → 許可メールのときだけFirestore読込＆自動保存フック
 (function(){
-  const s1 = document.createElement('script');
-  s1.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js';
-  s1.onload = function(){
-    const s2 = document.createElement('script');
-    s2.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js';
-    s2.onload = function(){
+  function load(src){
+    return new Promise(function(res,rej){
+      var s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=rej;
+      document.head.appendChild(s);
+    });
+  }
+  var base='https://www.gstatic.com/firebasejs/9.23.0/';
+  load(base+'firebase-app-compat.js')
+    .then(function(){ return load(base+'firebase-auth-compat.js'); })
+    .then(function(){ return load(base+'firebase-firestore-compat.js'); })
+    .then(function(){
       firebase.initializeApp(FB_CFG);
-      const db = firebase.firestore();
+      var db = firebase.firestore();
       window._db = db;
-      fbLoad(db).then(() => hookAutoSave(db));
-    };
-    document.head.appendChild(s2);
-  };
-  document.head.appendChild(s1);
+      var auth = firebase.auth();
+      var gate = document.getElementById('auth-gate');
+      auth.onAuthStateChanged(function(user){
+        if(user && isEmailAllowed(user.email)){
+          if(gate) gate.classList.add('hide');
+          document.body.classList.add('authed');
+          var mail=document.getElementById('uc-mail'); if(mail) mail.textContent=user.email;
+          clearAuthError();
+          if(!window._dataLoaded){ window._dataLoaded=true; fbLoad(db).then(function(){ hookAutoSave(db); }); }
+        } else if(user){
+          document.body.classList.remove('authed');
+          if(gate) gate.classList.remove('hide');
+          showAuthError(user.email+' はアクセスを許可されていません。別のアカウントでログインするか、管理者にご連絡ください。');
+          firebase.auth().signOut();
+        } else {
+          document.body.classList.remove('authed');
+          if(gate) gate.classList.remove('hide');
+          showLoginButton();
+        }
+      });
+    })
+    .catch(function(err){
+      showAuthError('Firebaseの読み込みに失敗しました。通信環境をご確認ください。');
+      console.error('Firebase load error:', err);
+    });
 })();
 
 
